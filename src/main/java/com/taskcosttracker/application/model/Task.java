@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Data
@@ -30,17 +31,26 @@ public class Task {
 
     private LocalDate completionDate;
 
-    @OneToMany(mappedBy = "task", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "task", fetch = FetchType.LAZY)
     private List<TaskOperation> operations;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Task task = (Task) o;
+        return Objects.equals(id, task.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
 
     @Override
     public String toString() {
         return "Task{" +
                 "id=" + id +
-                ", description='" + description + '\'' +
-                ", status=" + status +
-                ", cost=" + cost +
-                ", completionDate=" + completionDate +
                 '}';
     }
 }

@@ -13,4 +13,6 @@ public interface TaskOperationService {
 
     List<TaskOperation> getUnfinishedOperations();
 
+    List<TaskOperation> getAllTaskOperations();
+
 }

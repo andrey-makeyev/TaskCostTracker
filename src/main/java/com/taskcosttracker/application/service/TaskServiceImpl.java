@@ -1,7 +1,6 @@
 package com.taskcosttracker.application.service;
 
 import com.taskcosttracker.application.model.Task;
-import com.taskcosttracker.application.model.TaskOperation;
 import com.taskcosttracker.application.model.TaskStatus;
 import com.taskcosttracker.application.repository.TaskOperationRepository;
 import com.taskcosttracker.application.repository.TaskRepository;
@@ -34,12 +33,6 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public Task getTaskById(Long taskId) {
-        return taskRepository.findById(taskId)
-                .orElseThrow(() -> new RuntimeException("Task with id " + taskId + " not found."));
-    }
-
-    @Override
     public Iterable<Task> getIncompleteTasks() {
         return taskRepository.findByStatusIn(TaskStatus.PROJECT, TaskStatus.IN_PROGRESS);
     }
@@ -61,11 +54,6 @@ public class TaskServiceImpl implements TaskService {
         return completedTasks.stream()
                 .map(Task::getCost)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-    }
-
-    @Override
-    public Iterable<TaskOperation> getAllTaskOperations() {
-        return operationRepository.findAll();
     }
 
     @Override

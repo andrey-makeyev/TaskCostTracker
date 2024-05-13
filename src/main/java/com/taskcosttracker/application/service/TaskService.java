@@ -17,10 +17,6 @@ public interface TaskService {
 
     Iterable<Task> getCompletedTasksInRange(LocalDate startDate, LocalDate endDate);
 
-    Iterable<TaskOperation> getAllTaskOperations();
-
-    Task getTaskById(Long taskId);
-
     Iterable<Task> getAllTasks();
 
     List<Long> findAllTaskIds();

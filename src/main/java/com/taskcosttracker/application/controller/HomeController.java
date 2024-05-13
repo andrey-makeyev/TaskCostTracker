@@ -2,6 +2,7 @@ package com.taskcosttracker.application.controller;
 
 import com.taskcosttracker.application.model.Task;
 import com.taskcosttracker.application.model.TaskOperation;
+import com.taskcosttracker.application.service.TaskOperationService;
 import com.taskcosttracker.application.service.TaskService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,10 +18,12 @@ public class HomeController {
     private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
 
     private final TaskService taskService;
+    private final TaskOperationService taskOperationService;
 
     @Autowired
-    public HomeController(TaskService taskService) {
+    public HomeController(TaskService taskService, TaskOperationService taskOperationService) {
         this.taskService = taskService;
+        this.taskOperationService = taskOperationService;
     }
 
     @GetMapping
@@ -28,7 +31,7 @@ public class HomeController {
 
         logger.info("Displaying home page");
         Iterable<Task> tasks = taskService.getAllTasks();
-        Iterable<TaskOperation> operations = taskService.getAllTaskOperations();
+        Iterable<TaskOperation> operations = taskOperationService.getAllTaskOperations();
 
         model.addAttribute("tasks", tasks);
         model.addAttribute("operations", operations);

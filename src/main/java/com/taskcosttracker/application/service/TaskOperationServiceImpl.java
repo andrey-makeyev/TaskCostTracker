@@ -10,6 +10,7 @@ import com.taskcosttracker.application.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -23,12 +24,18 @@ public class TaskOperationServiceImpl implements TaskOperationService {
 
     private static final Logger logger = LoggerFactory.getLogger(TaskOperationServiceImpl.class);
 
-    private final TaskOperationRepository operationRepository;
+    private final TaskOperationRepository taskOperationRepository;
     private final TaskRepository taskRepository;
 
     @Override
+    public List<TaskOperation> getAllTaskOperations() {
+        Sort sort = Sort.by(Sort.Direction.ASC, "taskId");
+        return taskOperationRepository.findAll(sort);
+    }
+
+    @Override
     public List<TaskOperation> getUnfinishedOperations() {
-        return operationRepository.findByStatusNot(OperationStatus.COMPLETED);
+        return taskOperationRepository.findByStatusNot(OperationStatus.COMPLETED);
     }
 
     @Override
@@ -41,21 +48,15 @@ public class TaskOperationServiceImpl implements TaskOperationService {
         }
 
         List<TaskOperation> taskOperations = task.getOperations();
-        long orderNumber = 1;
-        if (!taskOperations.isEmpty()) {
-            long lastOperationId = taskOperations.get(taskOperations.size() - 1).getId();
-            orderNumber = lastOperationId + 1;
-        }
 
         TaskOperation operation = new TaskOperation();
-        operation.setId(orderNumber);
         operation.setTask(task);
         operation.setDescription(description);
         operation.setPlannedQuantity(plannedQuantity);
         operation.setPrice(price);
         operation.setStatus(OperationStatus.PROJECT);
         operation.setCost(BigDecimal.valueOf(plannedQuantity).multiply(price));
-        
+
         taskOperations.add(operation);
         task.setOperations(taskOperations);
         BigDecimal totalCost = taskOperations.stream()
@@ -67,12 +68,12 @@ public class TaskOperationServiceImpl implements TaskOperationService {
         }
         taskRepository.save(task);
 
-        return operationRepository.save(operation);
+        return taskOperationRepository.save(operation);
     }
 
     @Override
     public void markOperationCompleted(Long operationId, Integer actualQuantity) {
-        Optional<TaskOperation> operationOptional = operationRepository.findById(operationId);
+        Optional<TaskOperation> operationOptional = taskOperationRepository.findById(operationId);
         if (operationOptional.isPresent()) {
             TaskOperation operation = operationOptional.get();
             operation.setStatus(OperationStatus.COMPLETED);
@@ -95,7 +96,7 @@ public class TaskOperationServiceImpl implements TaskOperationService {
                 }
             }
 
-            operationRepository.save(operation);
+            taskOperationRepository.save(operation);
             taskRepository.save(task);
         } else {
             throw new RuntimeException("Task operation with id " + operationId + " not found.");
